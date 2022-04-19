@@ -1,3 +1,4 @@
+// Package lazyio includes io.ReadClosers that will lazily load from a file or URL.
 package lazyio
 
 import (
