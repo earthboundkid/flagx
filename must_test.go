@@ -3,25 +3,21 @@ package flagx_test
 import (
 	"flag"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/carlmjohnson/flagx"
 )
 
 func ExampleMustHave_missingFlag() {
-	var buf strings.Builder
-	defer func() {
-		recover()
-		fmt.Println(buf.String())
-	}()
-
-	fs := flag.NewFlagSet("ExampleMustHave", flag.PanicOnError)
-	fs.SetOutput(&buf)
+	fs := flag.NewFlagSet("ExampleMustHave", flag.ContinueOnError)
+	fs.SetOutput(os.Stdout)
 	fs.String("a", "", "this value must be set")
 	fs.String("b", "", "this value must be set")
 	fs.String("c", "", "this value is optional")
 	fs.Parse([]string{"-a", "set"})
-	flagx.MustHave(fs, "a", "b")
+	err := flagx.MustHave(fs, "a", "b")
+	fmt.Println("Missing:", flagx.Missing(err))
 	// Output:
 	// missing required flag: b
 	// Usage of ExampleMustHave:
@@ -31,6 +27,7 @@ func ExampleMustHave_missingFlag() {
 	//     	this value must be set
 	//   -c string
 	//     	this value is optional
+	// Missing: [b]
 }
 
 func ExampleMustHave_noMissingFlag() {

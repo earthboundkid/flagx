@@ -1,6 +1,7 @@
 package flagx
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"strings"
@@ -9,13 +10,13 @@ import (
 // MustHave is a convenience function that checks that the named flags
 // were set on fl. Missing flags are treated with the policy of
 // fl.ErrorHandling(): ExitOnError, ContinueOnError, or PanicOnError.
-// Returned errors will have type MissingFlagsError.
+// Returned errors can be unpacked by Missing.
 //
 // If nil, fl defaults to flag.CommandLine.
 func MustHave(fl *flag.FlagSet, names ...string) error {
 	fl = flagOrDefault(fl)
 	seen := listVisitedFlagNames(fl)
-	var missing MissingFlagsError
+	var missing missingFlagsError
 	for _, name := range names {
 		if !seen[name] {
 			missing = append(missing, name)
@@ -27,12 +28,19 @@ func MustHave(fl *flag.FlagSet, names ...string) error {
 	return handleErr(fl, missing)
 }
 
-// MissingFlagsError is the error type returned by MustHave.
-type MissingFlagsError []string
+// Missing returns a slice of required flags missing from an error returned by MustHave.
+func Missing(err error) []string {
+	var missing missingFlagsError
+	errors.As(err, &missing)
+	return missing
+}
 
-func (missing MissingFlagsError) Error() string {
+// missingFlagsError is the error type returned by MustHave.
+type missingFlagsError []string
+
+func (missing missingFlagsError) Error() string {
 	if len(missing) == 0 {
-		return "MissingFlagsError<empty>"
+		return "missingFlagsError<empty>"
 	}
 	if len(missing) == 1 {
 		return fmt.Sprintf("missing required flag: %s", missing[0])
