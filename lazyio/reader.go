@@ -1,8 +1,7 @@
-package flagx
+package lazyio
 
 import (
 	"bufio"
-	"flag"
 	"fmt"
 	"io"
 	"net/http"
@@ -10,10 +9,13 @@ import (
 	"os"
 )
 
-// Reader is an io.ReadCloser that can be set as a flag.Value
+// Reader is an io.ReadCloser that can be used as a flag.Value.
 type Reader interface {
-	io.ReadCloser
-	flag.Getter
+	Read(p []byte) (n int, err error)
+	Close() error
+	Set(string) error
+	Get() any
+	String() string
 }
 
 const (
