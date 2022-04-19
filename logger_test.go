@@ -1,11 +1,11 @@
-package flagext_test
+package flagx_test
 
 import (
 	"flag"
 	"log"
 	"os"
 
-	"github.com/carlmjohnson/flagext"
+	"github.com/carlmjohnson/flagx"
 )
 
 func ExampleLogger() {
@@ -21,7 +21,7 @@ func ExampleLogger() {
 		fs := flag.NewFlagSet("ExampleLogger", flag.PanicOnError)
 		l := log.New(nil, "myapp ", 00)
 		fs.Var(
-			flagext.Logger(l, flagext.LogVerbose),
+			flagx.Logger(l, flagx.LogVerbose),
 			"verbose",
 			`log output`,
 		)
@@ -33,7 +33,7 @@ func ExampleLogger() {
 		fs := flag.NewFlagSet("ExampleLogger", flag.PanicOnError)
 		l := log.New(nil, "myapp ", 00)
 		fs.Var(
-			flagext.Logger(l, flagext.LogSilent),
+			flagx.Logger(l, flagx.LogSilent),
 			"silent",
 			`don't log output`,
 		)
@@ -45,7 +45,7 @@ func ExampleLogger() {
 		fs := flag.NewFlagSet("ExampleLogger", flag.PanicOnError)
 		l := log.New(nil, "myapp ", 00)
 		fs.Var(
-			flagext.Logger(l, flagext.LogVerbose),
+			flagx.Logger(l, flagx.LogVerbose),
 			"verbose",
 			`log output`,
 		)
@@ -57,7 +57,7 @@ func ExampleLogger() {
 		fs := flag.NewFlagSet("ExampleLogger", flag.PanicOnError)
 		l := log.New(nil, "myapp ", 00)
 		fs.Var(
-			flagext.Logger(l, flagext.LogSilent),
+			flagx.Logger(l, flagx.LogSilent),
 			"silent",
 			`don't log output`,
 		)

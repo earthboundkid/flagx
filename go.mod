@@ -1,4 +1,4 @@
-module github.com/carlmjohnson/flagext
+module github.com/carlmjohnson/flagx
 
 go 1.18
 

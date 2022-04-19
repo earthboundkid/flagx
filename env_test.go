@@ -1,4 +1,4 @@
-package flagext_test
+package flagx_test
 
 import (
 	"flag"
@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/carlmjohnson/be"
-	"github.com/carlmjohnson/flagext"
+	"github.com/carlmjohnson/flagx"
 )
 
 func ExampleParseEnv() {
@@ -19,7 +19,7 @@ func ExampleParseEnv() {
 
 	os.Setenv("TEST_ENV_A", "2")
 	os.Setenv("TEST_ENV_B", "3")
-	flagext.ParseEnv(fs, "test-env")
+	flagx.ParseEnv(fs, "test-env")
 
 	// Does not override existing values
 	fmt.Println("a", *a)
@@ -41,7 +41,7 @@ func TestParseEnv(t *testing.T) {
 	be.Equal(t, 1, *a)
 	// Does not override existing values
 	os.Setenv("TEST_ENV_A", "y")
-	err = flagext.ParseEnv(fs, "TEST_ENV")
+	err = flagx.ParseEnv(fs, "TEST_ENV")
 	be.NilErr(t, err)
 	output := buf.String()
 	be.Zero(t, output)
@@ -52,7 +52,7 @@ func TestParseEnv(t *testing.T) {
 	fs.SetOutput(&buf)
 	kebab := fs.Int("a-b-c", 0, "")
 	os.Setenv("TEST_ENV_A_B_C", "1")
-	err = flagext.ParseEnv(fs, "TEST_ENV")
+	err = flagx.ParseEnv(fs, "TEST_ENV")
 	be.NilErr(t, err)
 	be.Equal(t, 1, *kebab)
 	output = buf.String()
@@ -67,7 +67,7 @@ func TestParseEnv(t *testing.T) {
 	be.NilErr(t, err)
 	be.Zero(t, *b)
 	os.Setenv("TEST_ENV_B", "y")
-	err = flagext.ParseEnv(fs, "TEST_ENV")
+	err = flagx.ParseEnv(fs, "TEST_ENV")
 	be.Nonzero(t, err)
 	output = buf.String()
 	expected := "invalid value \"y\" for flag -b: parse error\nUsage of ExampleParseEnv:\n  -b int\n    \t\n"

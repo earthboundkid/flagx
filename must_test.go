@@ -1,11 +1,11 @@
-package flagext_test
+package flagx_test
 
 import (
 	"flag"
 	"fmt"
 	"strings"
 
-	"github.com/carlmjohnson/flagext"
+	"github.com/carlmjohnson/flagx"
 )
 
 func ExampleMustHave_missingFlag() {
@@ -21,7 +21,7 @@ func ExampleMustHave_missingFlag() {
 	fs.String("b", "", "this value must be set")
 	fs.String("c", "", "this value is optional")
 	fs.Parse([]string{"-a", "set"})
-	flagext.MustHave(fs, "a", "b")
+	flagx.MustHave(fs, "a", "b")
 	// Output:
 	// missing required flag: b
 	// Usage of ExampleMustHave:
@@ -39,7 +39,7 @@ func ExampleMustHave_noMissingFlag() {
 	fs.String("b", "", "this value must be set")
 	fs.String("c", "", "this value is optional")
 	fs.Parse([]string{"-a", "set", "-b", "set"})
-	flagext.MustHave(fs, "a", "b")
+	flagx.MustHave(fs, "a", "b")
 	// Output:
 }
 
@@ -57,7 +57,7 @@ func ExampleMustHaveArgs_wrongNumber() {
 	}
 
 	fs.Parse([]string{"--", "one", "two"})
-	flagext.MustHaveArgs(fs, 0, 1)
+	flagx.MustHaveArgs(fs, 0, 1)
 	// Output:
 	// must have between 0 and 1 args; got 2
 	// Usage:
@@ -68,6 +68,6 @@ func ExampleMustHaveArgs_correctNumber() {
 	fs := flag.NewFlagSet("ExampleMustHave", flag.PanicOnError)
 	fs.String("a", "", "an option")
 	fs.Parse([]string{"--", "-a", "-b", "-c"})
-	flagext.MustHaveArgs(fs, 3, 3)
+	flagx.MustHaveArgs(fs, 3, 3)
 	// Output:
 }

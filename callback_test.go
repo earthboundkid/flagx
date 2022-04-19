@@ -1,4 +1,4 @@
-package flagext_test
+package flagx_test
 
 import (
 	"flag"
@@ -6,7 +6,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/carlmjohnson/flagext"
+	"github.com/carlmjohnson/flagx"
 )
 
 func ExampleCallback_badFlag() {
@@ -14,7 +14,7 @@ func ExampleCallback_badFlag() {
 	fs.SetOutput(io.Discard)
 	const usage = `...`
 	var mode string
-	flagext.Callback(fs, "mode", mode, usage, func(s string) error {
+	flagx.Callback(fs, "mode", mode, usage, func(s string) error {
 		if s != strings.ToLower(s) {
 			return fmt.Errorf("mode must be lower case")
 		}
@@ -32,7 +32,7 @@ func ExampleCallback_goodFlag() {
 	fs := flag.NewFlagSet("ExampleCallback", flag.PanicOnError)
 	const usage = `...`
 	var mode string
-	flagext.Callback(fs, "mode", mode, usage, func(s string) error {
+	flagx.Callback(fs, "mode", mode, usage, func(s string) error {
 		if s != strings.ToLower(s) {
 			return fmt.Errorf("mode must be lower case")
 		}
@@ -50,7 +50,7 @@ func ExampleCallback_defaultValue() {
 	fs := flag.NewFlagSet("ExampleCallback", flag.PanicOnError)
 
 	mode := "none"
-	flagext.Callback(fs, "mode", mode, "what mode to use", func(s string) error {
+	flagx.Callback(fs, "mode", mode, "what mode to use", func(s string) error {
 		if s != strings.ToLower(s) {
 			return fmt.Errorf("mode must be lower case")
 		}

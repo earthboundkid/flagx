@@ -1,4 +1,4 @@
-package flagext
+package flagx
 
 import (
 	"bufio"
