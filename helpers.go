@@ -7,13 +7,13 @@ import (
 	"os"
 )
 
-func handleErr(fl *flag.FlagSet, err error) error {
-	fl = cmp.Or(fl, flag.CommandLine)
-	fmt.Fprintln(fl.Output(), err)
-	if fl.Usage != nil {
-		fl.Usage()
+func handleErr(fs *flag.FlagSet, err error) error {
+	fs = cmp.Or(fs, flag.CommandLine)
+	fmt.Fprintln(fs.Output(), err)
+	if fs.Usage != nil {
+		fs.Usage()
 	}
-	switch fl.ErrorHandling() {
+	switch fs.ErrorHandling() {
 	case flag.PanicOnError:
 		panic(err)
 	case flag.ExitOnError:

@@ -10,14 +10,14 @@ import (
 )
 
 // MustHave is a convenience function that checks that the named flags
-// were set on fl. Missing flags are treated with the policy of
-// fl.ErrorHandling(): ExitOnError, ContinueOnError, or PanicOnError.
+// were set on fs. Missing flags are treated with the policy of
+// fs.ErrorHandling(): ExitOnError, ContinueOnError, or PanicOnError.
 // Returned errors can be unpacked by Missing.
 //
-// If nil, fl defaults to flag.CommandLine.
-func MustHave(fl *flag.FlagSet, names ...string) error {
+// If nil, fs defaults to flag.CommandLine.
+func MustHave(fs *flag.FlagSet, names ...string) error {
 	var missing missingFlagsError
-	for f, seen := range All(fl) {
+	for f, seen := range All(fs) {
 		if !seen && slices.Contains(names, f.Name) {
 			missing = append(missing, f.Name)
 		}
@@ -25,7 +25,7 @@ func MustHave(fl *flag.FlagSet, names ...string) error {
 	if len(missing) == 0 {
 		return nil
 	}
-	return handleErr(fl, missing)
+	return handleErr(fs, missing)
 }
 
 // Missing returns a slice of required flags missing from an error returned by MustHave.
@@ -49,19 +49,19 @@ func (missing missingFlagsError) Error() string {
 		len(missing), strings.Join(missing, ", "))
 }
 
-// MustHaveArgs is a convenience function that checks that fl.NArg()
+// MustHaveArgs is a convenience function that checks that fs.NArg()
 // is within the bounds min and max (inclusive). Use max -1 to indicate
-// no maximum value. MustHaveArgs uses the policy of  fl.ErrorHandling():
+// no maximum value. MustHaveArgs uses the policy of fs.ErrorHandling():
 // ExitOnError, ContinueOnError, or PanicOnError.
 //
-// If nil, fl defaults to flag.CommandLine.
-func MustHaveArgs(fl *flag.FlagSet, min, max int) error {
-	fl = cmp.Or(fl, flag.CommandLine)
+// If nil, fs defaults to flag.CommandLine.
+func MustHaveArgs(fs *flag.FlagSet, min, max int) error {
+	fs = cmp.Or(fs, flag.CommandLine)
 	noMax := max < 0
 	if max < min && !noMax {
 		panic("mismatched arguments to MustHaveArgs")
 	}
-	n := fl.NArg()
+	n := fs.NArg()
 	var err error
 	switch {
 	case n >= min && (noMax || n <= max):
@@ -75,5 +75,5 @@ func MustHaveArgs(fl *flag.FlagSet, min, max int) error {
 	default:
 		err = fmt.Errorf("must have between %d and %d args; got %d", min, max, n)
 	}
-	return handleErr(fl, err)
+	return handleErr(fs, err)
 }
