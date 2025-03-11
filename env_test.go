@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/carlmjohnson/be"
-	"github.com/carlmjohnson/flagx"
+	"github.com/earthboundkid/flagx/v2"
 )
 
 func ExampleParseEnv() {

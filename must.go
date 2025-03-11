@@ -1,9 +1,11 @@
 package flagx
 
 import (
+	"cmp"
 	"errors"
 	"flag"
 	"fmt"
+	"slices"
 	"strings"
 )
 
@@ -14,12 +16,10 @@ import (
 //
 // If nil, fl defaults to flag.CommandLine.
 func MustHave(fl *flag.FlagSet, names ...string) error {
-	fl = flagOrDefault(fl)
-	seen := listVisitedFlagNames(fl)
 	var missing missingFlagsError
-	for _, name := range names {
-		if !seen[name] {
-			missing = append(missing, name)
+	for f, seen := range All(fl) {
+		if !seen && slices.Contains(names, f.Name) {
+			missing = append(missing, f.Name)
 		}
 	}
 	if len(missing) == 0 {
@@ -56,7 +56,7 @@ func (missing missingFlagsError) Error() string {
 //
 // If nil, fl defaults to flag.CommandLine.
 func MustHaveArgs(fl *flag.FlagSet, min, max int) error {
-	fl = flagOrDefault(fl)
+	fl = cmp.Or(fl, flag.CommandLine)
 	noMax := max < 0
 	if max < min && !noMax {
 		panic("mismatched arguments to MustHaveArgs")

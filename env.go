@@ -12,18 +12,16 @@ import (
 // Flag names are prefixed and converted to SCREAMING_SNAKE_CASE when
 // looking up environment variables.
 func ParseEnv(fl *flag.FlagSet, prefix string) error {
-	fl = flagOrDefault(fl)
-	seen := listVisitedFlagNames(fl)
-
 	var nameAndVals [][2]string
-	fl.VisitAll(func(fn *flag.Flag) {
-		if !seen[fn.Name] {
-			key := kebabToUpperSnake(prefix, fn.Name)
-			if val, ok := os.LookupEnv(key); ok {
-				nameAndVals = append(nameAndVals, [2]string{fn.Name, val})
-			}
+	for f, seen := range All(fl) {
+		if seen {
+			continue
 		}
-	})
+		key := kebabToUpperSnake(prefix, f.Name)
+		if val, ok := os.LookupEnv(key); ok {
+			nameAndVals = append(nameAndVals, [2]string{f.Name, val})
+		}
+	}
 	for i := range nameAndVals {
 		name := nameAndVals[i][0]
 		val := nameAndVals[i][1]

@@ -1,27 +1,14 @@
 package flagx
 
 import (
+	"cmp"
 	"flag"
 	"fmt"
 	"os"
 )
 
-func listVisitedFlagNames(fl *flag.FlagSet) map[string]bool {
-	seen := make(map[string]bool)
-	fl.Visit(func(f *flag.Flag) {
-		seen[f.Name] = true
-	})
-	return seen
-}
-
-func flagOrDefault(fl *flag.FlagSet) *flag.FlagSet {
-	if fl == nil {
-		return flag.CommandLine
-	}
-	return fl
-}
-
 func handleErr(fl *flag.FlagSet, err error) error {
+	fl = cmp.Or(fl, flag.CommandLine)
 	fmt.Fprintln(fl.Output(), err)
 	if fl.Usage != nil {
 		fl.Usage()

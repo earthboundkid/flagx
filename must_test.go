@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/carlmjohnson/flagx"
+	"github.com/earthboundkid/flagx/v2"
 )
 
 func ExampleMustHave_missingFlag() {
