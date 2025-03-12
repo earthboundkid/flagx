@@ -17,7 +17,9 @@ func ExampleMustHave_missingFlag() {
 	fs.String("c", "", "this value is optional")
 	fs.Parse([]string{"-a", "set"})
 	err := flagx.MustHave(fs, "a", "b")
-	fmt.Println("Missing:", flagx.Missing(err))
+	for _, f := range flagx.Missing(err) {
+		fmt.Println("Missing:", f.Name)
+	}
 	// Output:
 	// missing required flag: b
 	// Usage of ExampleMustHave:
@@ -27,7 +29,7 @@ func ExampleMustHave_missingFlag() {
 	//     	this value must be set
 	//   -c string
 	//     	this value is optional
-	// Missing: [b]
+	// Missing: b
 }
 
 func ExampleMustHave_noMissingFlag() {

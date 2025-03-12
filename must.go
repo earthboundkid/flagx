@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"slices"
-	"strings"
 )
 
 // MustHave is a convenience function that checks that the named flags
@@ -19,7 +18,7 @@ func MustHave(fs *flag.FlagSet, names ...string) error {
 	var missing missingFlagsError
 	for f, seen := range All(fs) {
 		if !seen && slices.Contains(names, f.Name) {
-			missing = append(missing, f.Name)
+			missing = append(missing, f)
 		}
 	}
 	if len(missing) == 0 {
@@ -29,24 +28,27 @@ func MustHave(fs *flag.FlagSet, names ...string) error {
 }
 
 // Missing returns a slice of required flags missing from an error returned by MustHave.
-func Missing(err error) []string {
+func Missing(err error) []*flag.Flag {
 	var missing missingFlagsError
 	errors.As(err, &missing)
 	return missing
 }
 
 // missingFlagsError is the error type returned by MustHave.
-type missingFlagsError []string
+type missingFlagsError []*flag.Flag
 
 func (missing missingFlagsError) Error() string {
 	if len(missing) == 0 {
 		return "missingFlagsError<empty>"
 	}
 	if len(missing) == 1 {
-		return fmt.Sprintf("missing required flag: %s", missing[0])
+		return fmt.Sprintf("missing required flag: %s", missing[0].Name)
 	}
 	return fmt.Sprintf("missing %d required flags: %s",
-		len(missing), strings.Join(missing, ", "))
+		len(missing),
+		joinFunc(slices.Values(missing), ", ", func(f *flag.Flag) string {
+			return f.Name
+		}))
 }
 
 // MustHaveArgs is a convenience function that checks that fs.NArg()
