@@ -11,25 +11,25 @@ import (
 // environment variable exists, and if so calls Set with its value.
 // Flag names are prefixed and converted to SCREAMING_SNAKE_CASE when
 // looking up environment variables.
-func ParseEnv(fl *flag.FlagSet, prefix string) error {
-	fl = flagOrDefault(fl)
-	seen := listVisitedFlagNames(fl)
-
+//
+// If nil, fs defaults to flag.CommandLine.
+func ParseEnv(fs *flag.FlagSet, prefix string) error {
 	var nameAndVals [][2]string
-	fl.VisitAll(func(fn *flag.Flag) {
-		if !seen[fn.Name] {
-			key := kebabToUpperSnake(prefix, fn.Name)
-			if val, ok := os.LookupEnv(key); ok {
-				nameAndVals = append(nameAndVals, [2]string{fn.Name, val})
-			}
+	for f, seen := range All(fs) {
+		if seen {
+			continue
 		}
-	})
+		key := kebabToUpperSnake(prefix, f.Name)
+		if val, ok := os.LookupEnv(key); ok {
+			nameAndVals = append(nameAndVals, [2]string{f.Name, val})
+		}
+	}
 	for i := range nameAndVals {
 		name := nameAndVals[i][0]
 		val := nameAndVals[i][1]
-		if err := fl.Set(name, val); err != nil {
+		if err := fs.Set(name, val); err != nil {
 			err = fmt.Errorf("invalid value %q for flag -%s: %v", val, name, err)
-			return handleErr(fl, err)
+			return handleErr(fs, err)
 		}
 	}
 	return nil
