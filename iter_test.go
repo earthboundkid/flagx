@@ -6,11 +6,12 @@ import (
 	"maps"
 	"testing"
 
-	"github.com/carlmjohnson/be"
+	"github.com/earthboundkid/assert"
 	"github.com/earthboundkid/flagx/v2"
 )
 
 func TestAll(t *testing.T) {
+	tt := assert.Continues(t)
 	fs := flag.NewFlagSet("ExampleMustHave", flag.ContinueOnError)
 	fs.SetOutput(io.Discard)
 	fs.String("a", "", "this value must be set")
@@ -18,15 +19,15 @@ func TestAll(t *testing.T) {
 	fs.String("c", "", "this value is optional")
 	fs.Parse([]string{"-a", "set"})
 	for f, ok := range flagx.All(fs) {
-		be.Equal(t, "a", f.Name)
-		be.Equal(t, true, ok)
+		tt.Equal(f.Name, "a").True(ok)
 		break
 	}
 
-	m := maps.Collect(flagx.All(fs))
-	be.DeepEqual(t, map[*flag.Flag]bool{
-		fs.Lookup("a"): true,
-		fs.Lookup("b"): false,
-		fs.Lookup("c"): false,
-	}, m)
+	tt.True(maps.Equal(
+		maps.Collect(flagx.All(fs)),
+		map[*flag.Flag]bool{
+			fs.Lookup("a"): true,
+			fs.Lookup("b"): false,
+			fs.Lookup("c"): false,
+		}))
 }

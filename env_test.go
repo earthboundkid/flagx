@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/carlmjohnson/be"
+	"github.com/earthboundkid/assert"
 	"github.com/earthboundkid/flagx/v2"
 )
 
@@ -31,20 +31,21 @@ func ExampleParseEnv() {
 }
 
 func TestParseEnv(t *testing.T) {
+	be := assert.FailsNow(t)
 	// Don't override
 	fs := flag.NewFlagSet("ExampleParseEnv", flag.ContinueOnError)
 	var buf strings.Builder
 	fs.SetOutput(&buf)
 	a := fs.Int("a", 0, "")
 	err := fs.Parse([]string{"-a", "1"})
-	be.NilErr(t, err)
-	be.Equal(t, 1, *a)
+	be.NilError(err)
+	be.Equal(*a, 1)
 	// Does not override existing values
 	os.Setenv("TEST_ENV_A", "y")
 	err = flagx.ParseEnv(fs, "TEST_ENV")
-	be.NilErr(t, err)
+	be.NilError(err)
 	output := buf.String()
-	be.Zero(t, output)
+	be.Falsey(output)
 
 	// Convert kebabs
 	fs = flag.NewFlagSet("ExampleParseEnv", flag.ContinueOnError)
@@ -53,10 +54,10 @@ func TestParseEnv(t *testing.T) {
 	kebab := fs.Int("a-b-c", 0, "")
 	os.Setenv("TEST_ENV_A_B_C", "1")
 	err = flagx.ParseEnv(fs, "TEST_ENV")
-	be.NilErr(t, err)
-	be.Equal(t, 1, *kebab)
+	be.NilError(err)
+	be.Equal(*kebab, 1)
 	output = buf.String()
-	be.Zero(t, output)
+	be.Falsey(output)
 
 	// With error
 	fs = flag.NewFlagSet("ExampleParseEnv", flag.ContinueOnError)
@@ -64,12 +65,12 @@ func TestParseEnv(t *testing.T) {
 	fs.SetOutput(&buf)
 	b := fs.Int("b", 0, "")
 	err = fs.Parse(nil)
-	be.NilErr(t, err)
-	be.Zero(t, *b)
+	be.NilError(err)
+	be.Falsey(*b)
 	os.Setenv("TEST_ENV_B", "y")
 	err = flagx.ParseEnv(fs, "TEST_ENV")
-	be.Nonzero(t, err)
+	be.Truthy(err)
 	output = buf.String()
 	expected := "invalid value \"y\" for flag -b: parse error\nUsage of ExampleParseEnv:\n  -b int\n    \t\n"
-	be.Equal(t, expected, output)
+	be.Equal(output, expected)
 }
