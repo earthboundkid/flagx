@@ -11,7 +11,7 @@ import (
 )
 
 func TestAll(t *testing.T) {
-	tt := assert.Continues(t)
+	be := assert.Continues(t)
 	fs := flag.NewFlagSet("ExampleMustHave", flag.ContinueOnError)
 	fs.SetOutput(io.Discard)
 	fs.String("a", "", "this value must be set")
@@ -19,11 +19,11 @@ func TestAll(t *testing.T) {
 	fs.String("c", "", "this value is optional")
 	fs.Parse([]string{"-a", "set"})
 	for f, ok := range flagx.All(fs) {
-		tt.Equal(f.Name, "a").True(ok)
+		be.Equal(f.Name, "a").True(ok)
 		break
 	}
 
-	tt.True(maps.Equal(
+	be.True(maps.Equal(
 		maps.Collect(flagx.All(fs)),
 		map[*flag.Flag]bool{
 			fs.Lookup("a"): true,
